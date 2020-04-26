@@ -13,10 +13,9 @@ import lombok.Data;
 
 public class Wallet {
 
-	
 	private String name;
-	private Map<String,BigDecimal> holdings;
-	
+	private Map<String, BigDecimal> holdings;
+
 	public Wallet() {
 		this("");
 	}
@@ -27,22 +26,29 @@ public class Wallet {
 	}
 
 	public BigDecimal addHolding(String coin, BigDecimal qty) {
-		BigDecimal currentQty= this.holdings.getOrDefault(coin, new BigDecimal(0)); 
+		BigDecimal currentQty = this.holdings.getOrDefault(coin, new BigDecimal(0));
 		BigDecimal newQty = currentQty.add(qty);
 		this.holdings.put(coin, newQty);
-		
+
 		return newQty;
 	}
 
 	public BigDecimal removeHolding(String coin, BigDecimal qty) throws WalletInvalidMovementExeption {
-		BigDecimal currentQty= this.holdings.getOrDefault(coin, new BigDecimal(0));
+		BigDecimal currentQty = this.holdings.getOrDefault(coin, new BigDecimal(0));
+		
+		if (currentQty.compareTo(qty) == 0) {
+			this.holdings.remove(coin);
+			return BigDecimal.ZERO;
+		}
+
 		BigDecimal newQty = currentQty.subtract(qty);
-		if(newQty.compareTo(BigDecimal.ZERO) >=0) {
+
+		if (newQty.compareTo(BigDecimal.ZERO) > 0) {
 			this.holdings.put(coin, newQty);
-		}else {
+		} else {
 			throw new WalletInvalidMovementExeption(String.format("not enough %s holdings to remove", coin));
 		}
-		
 		return newQty;
+
 	}
 }

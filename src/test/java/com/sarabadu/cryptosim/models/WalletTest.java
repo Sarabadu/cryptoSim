@@ -2,6 +2,7 @@ package com.sarabadu.cryptosim.models;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -73,7 +74,6 @@ public class WalletTest {
 	
 		actualQty = w.removeHolding("BTC",new BigDecimal("0.000000002"));
 		
-		assertEquals( 0,w.getHoldings().get("BTC").compareTo(BigDecimal.ZERO));
 		assertEquals(0,actualQty.compareTo(BigDecimal.ZERO));
 		
 	}
@@ -98,5 +98,36 @@ public class WalletTest {
 		
 		assertEquals("not enough BTC holdings to remove", ex.getMessage());
 			
+	}
+	
+	
+	@Test
+	public void test_multiple_holding_operation_consistency() throws Exception {
+		Wallet w = new Wallet("myWallet");
+		w.addHolding("BTC",new BigDecimal("0.000000003"));
+		w.addHolding("BTC",new BigDecimal("0.000000003"));
+		w.addHolding("BTD",new BigDecimal("100.003"));
+		
+		BigDecimal actualQty = w.removeHolding("BTC",new BigDecimal("0.000000001"));
+		w.addHolding("BTC",new BigDecimal("0.000000003"));
+		w.addHolding("BTD",new BigDecimal("1"));
+		w.removeHolding("BTD",new BigDecimal("11.003"));
+		w.addHolding("BTE",new BigDecimal("1"));
+		w.addHolding("BTE",new BigDecimal("1"));
+		w.removeHolding("BTE",new BigDecimal("1.00000"));
+		w.removeHolding("BTE",new BigDecimal("1.00000"));
+		w.addHolding("BTE",new BigDecimal("1"));
+		w.addHolding("BTF",new BigDecimal("8"));
+		w.addHolding("BTG",new BigDecimal("1"));
+		w.removeHolding("BTG",new BigDecimal("1.00000"));
+		
+		
+		assertEquals(new BigDecimal("0.000000008"),w.getHoldings().get("BTC"));
+		assertEquals(0 ,w.getHoldings().get("BTD").compareTo(new BigDecimal("90")));
+		assertEquals(0,w.getHoldings().get("BTE").compareTo(new BigDecimal("1")));
+		assertEquals(0,w.getHoldings().get("BTF").compareTo(new BigDecimal("8")));
+		assertNull(w.getHoldings().get("BTG"));
+				
+		assertEquals(4, w.getHoldings().size());
 	}
 }

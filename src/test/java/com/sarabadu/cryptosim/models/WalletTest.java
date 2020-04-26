@@ -129,5 +129,6 @@ public class WalletTest {
 		assertNull(w.getHoldings().get("BTG"));
 				
 		assertEquals(4, w.getHoldings().size());
+
 	}
 }

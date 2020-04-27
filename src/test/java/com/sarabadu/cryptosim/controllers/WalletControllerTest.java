@@ -157,7 +157,7 @@ public class WalletControllerTest {
 				        .characterEncoding("utf-8"))
 				.andDo(print())
 				.andExpect(status().isOk())
-				//.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$").isMap())
 				.andExpect(jsonPath("$.name",equalTo("mockWallet")));
 
@@ -169,6 +169,19 @@ public class WalletControllerTest {
 		assertEquals(0,recibedWallet.getHoldings().size());
 		assertEquals(1l, longCaptor.getValue());
 		
+	}
+	
+	@Test
+	public void test_delete_wallet() throws Exception {
+		Wallet w1 = new Wallet("mockWallet");
+
+		when(service.delete(Mockito.any(Long.class))).thenReturn(true);
+
+		mockMvc.perform(delete("/api/wallets/1"))
+				.andDo(print())
+				.andExpect(status().isOk());
+		
+		verify(service,times(1)).delete(1l);
 		
 	}
 

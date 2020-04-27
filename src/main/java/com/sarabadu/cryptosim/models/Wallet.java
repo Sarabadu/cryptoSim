@@ -5,15 +5,36 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinTable;
+import javax.persistence.MapKeyColumn;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+
 import com.sarabadu.cryptosim.exceptions.WalletInvalidMovementExeption;
 
 import lombok.Data;
 
 @Data
-
+@Entity
 public class Wallet {
 
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	private Long id;
+	
 	private String name;
+	
+	@ElementCollection
+	@JoinTable(name="holdings", joinColumns= @JoinColumn(name="id"))
+	@MapKeyColumn (name="holding_id")
+	@Column(name="qty")
 	private Map<String, BigDecimal> holdings;
 
 	public Wallet() {
